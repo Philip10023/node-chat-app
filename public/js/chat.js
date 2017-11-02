@@ -1,5 +1,5 @@
 var socket = io();
-
+// Technically works but is clucky, may try drag instead of swipe 
 var swipe = new Hammer(document);
 // detect swipe and call to a function
 swipe.on('swiperight swipeleft', function(e) {
