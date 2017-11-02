@@ -1,5 +1,23 @@
 var socket = io();
 
+var swipe = new Hammer(document);
+// detect swipe and call to a function
+swipe.on('swiperight swipeleft', function(e) {
+  e.preventDefault();
+  if (e.type == 'swiperight') {
+    // open menu
+    $('#chat__sidebar').animate({
+      left: '0'
+    });
+  } else {
+    // close/hide menu
+    $('#chat__sidebar').animate({
+      left: '-100%'
+    });
+  }
+
+});
+
 function scrollToBottom () {
   // Selectors
   var messages = jQuery('#messages');

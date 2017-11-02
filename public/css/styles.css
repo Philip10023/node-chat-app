@@ -176,9 +176,18 @@ button:disabled {
   * {
     font-size: 1rem;
   }
+  
+  #chat__sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    background-color: #1667F3;
+    height: 100%;
+    width: 30%;
+  }
 
   .chat__sidebar {
-    display: none;
+    width: 150px;
   }
 
   .chat__footer {

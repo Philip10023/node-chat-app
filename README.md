@@ -8,9 +8,9 @@ Real time chat app with socket.io
 - [ ] hammer.js for better mobile people list interface
 - [ ] mongoose for presisting messages
 - [ ] custom user auth with bcrypt
-- [ ] organize groups in a group list/ perhaps active groups list that automatically populates and depopulates 
+- [ ] organize groups in a group list/ perhaps active groups list that automatically populates and depopulates
 
 -------- stretch goal
 
 - [ ] private group options for the creator
-- [ ] ability to reassign creator privledges 
+- [ ] ability to reassign creator privileges 

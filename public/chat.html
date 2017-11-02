@@ -11,10 +11,13 @@
 
 <body class="chat">
 
+<div id="chat__sidebar">
   <div class="chat__sidebar">
     <h3>People</h3>
     <div id=users></div>
   </div>
+</div>
+
 
   <div class="chat__main">
     <ol id='messages' class="chat__messages"></ol>
@@ -54,12 +57,12 @@
     </li>
   </script>
 
-
   <script src="/socket.io/socket.io.js"></script>
   <script src="/js/libs/jquery-3.2.1.min.js"></script>
   <script src="/js/libs/moment.js"></script>
   <script src="/js/libs/mustache.js"></script>
   <script src="/js/libs/deparam.js"></script>
+  <script src="/js/libs/hammer.js"></script>
   <script src='/js/chat.js'></script>
 </body>
 
