@@ -1,10 +1,29 @@
 var socket = io();
-// Technically works but is clucky, may try drag instead of swipe 
+
+// Technically works but is clucky, may try drag instead of swipe
 var swipe = new Hammer(document);
+var pan = new Hammer(document)
 // detect swipe and call to a function
+
 swipe.on('swiperight swipeleft', function(e) {
   e.preventDefault();
   if (e.type == 'swiperight') {
+    // open menu
+    $('#chat__sidebar').animate({
+      left: '0'
+    });
+  } else {
+    // close/hide menu
+    $('#chat__sidebar').animate({
+      left: '-100%'
+    });
+  }
+
+});
+
+pan.on('panright panleft', function(e) {
+  e.preventDefault();
+  if (e.type == 'panright') {
     // open menu
     $('#chat__sidebar').animate({
       left: '0'

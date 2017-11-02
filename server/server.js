@@ -3,6 +3,7 @@ const http = require('http');
 const express = require("express");
 const socketIO = require('socket.io');
 
+
 const {generateMessage, generateLocationMessage} = require('./utils/message');
 const {isRealString} = require('./utils/validation')
 const {Users} = require('./utils/users')
@@ -21,6 +22,7 @@ io.on('connection', (socket) => {
   //socket.emit from admin to say welcome to my site
   // socket.emit('newMessage', generateMessage('Admin', 'Welcome to my chat app'))
   //socket.broastcast.emit from admin text New user joined
+  // alertify.message('Normal message');
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New User Joined'))
 
   socket.on('join', (params, callback) => {
