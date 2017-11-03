@@ -1,6 +1,25 @@
 var socket = io();
 
-// Technically works but is clucky, may try drag instead of swipe
+if ( $(window).width() > 739) {
+  console.log('large screen')
+}
+else {
+  socket.on('newMessage', function () {
+    var time = moment().valueOf()
+    var formattedTime = moment(time).format('h:mm a')
+    var template = jQuery('#message-template').html();
+    var html = Mustache.render(template, {
+      text: 'swipe right on mobile phones to see the people list!',
+      from: 'Admin',
+      createdAt: formattedTime
+    })
+
+    jQuery('#messages').append(html);
+    scrollToBottom()
+  });
+  //Add your javascript for small screens here
+}
+
 var swipe = new Hammer(document);
 var pan = new Hammer(document)
 // detect swipe and call to a function
@@ -37,6 +56,8 @@ pan.on('panright panleft', function(e) {
 
 });
 
+
+
 function scrollToBottom () {
   // Selectors
   var messages = jQuery('#messages');
@@ -61,7 +82,7 @@ socket.on('connect', function () {
       alert(err)
       window.location.href = '/'
     } else {
-      console.log('Success')
+      console.log('success')
     }
   })
 });

@@ -4,7 +4,7 @@ const express = require("express");
 const socketIO = require('socket.io');
 
 
-const {generateMessage, generateLocationMessage} = require('./utils/message');
+const {generateMessage, generateLocationMessage, generateNotice} = require('./utils/message');
 const {isRealString} = require('./utils/validation')
 const {Users} = require('./utils/users')
 const publicPath = path.join(__dirname, '../public');
@@ -17,13 +17,16 @@ var users = new Users()
 app.use(express.static(publicPath))
 
 io.on('connection', (socket) => {
-  console.log('New User Connected')
+
 
   //socket.emit from admin to say welcome to my site
   // socket.emit('newMessage', generateMessage('Admin', 'Welcome to my chat app'))
   //socket.broastcast.emit from admin text New user joined
   // alertify.message('Normal message');
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New User Joined'))
+
+  socket.broadcast.emit('newNotice', generateNotice('Admin', 'swipe right on mobile phones to see the people list!'))
+
 
   socket.on('join', (params, callback) => {
     console.log(params.name, params.room)
@@ -38,6 +41,8 @@ io.on('connection', (socket) => {
     io.to(params.room).emit('updateUserList', users.getUserList(params.room))
     socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app!'))
     socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined ${params.room}`))
+
+
 
     callback()
   })

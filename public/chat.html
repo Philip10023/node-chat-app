@@ -7,6 +7,7 @@
   <title>Chat | ChatApp </title>
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
   <link rel="stylesheet" href="/css/styles.css">
+
 </head>
 
 <body class="chat">
@@ -21,6 +22,15 @@
 
   <div class="chat__main">
     <ol id='messages' class="chat__messages"></ol>
+
+    <script id="slideNotify-template" type="text/template">
+      <div class="notification-messages">
+        <li>
+          <h2>{{from}} Hello</h2>
+          <h4>{{message}}</h4>
+        </li>
+      </div>
+    </script>
 
     <div class="chat__footer">
       <form id="message-form">
@@ -63,7 +73,6 @@
   <script src="/js/libs/mustache.js"></script>
   <script src="/js/libs/deparam.js"></script>
   <script src="/js/libs/hammer.js"></script>
-  <script src="/js/libs/pnotify.custom.min.js"></script>
   <script src='/js/chat.js'></script>
 </body>
 
