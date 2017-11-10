@@ -75,86 +75,129 @@ function scrollToBottom () {
 }
 
 socket.on('connect', function () {
-  var params = jQuery.deparam(window.location.search)
 
-  socket.emit('join', params, function (err) {
-    if (err) {
-      alert(err)
-      window.location.href = '/'
-    } else {
-      console.log('success')
+  var room_id = localStorage.getItem('room_id');
+  var room_name = localStorage.getItem('room_name');
+  var user_name = localStorage.getItem('user_name');
+  var user_id = localStorage.getItem('user_id');
+  var user_token = localStorage.getItem('user_token');
+
+
+  if( !room_id || !room_name || !user_name || !user_id || !user_token) {
+    alert('You have to sign in to start chatting');
+    return window.location.href = '/';
+  }
+
+  //Set room name
+  $('#room-name').html(room_name);
+
+  var params = {
+    room_id,
+    user_token
+  }
+
+  socket.emit('join', params, function(err) {
+    if(err){
+      console.log('Error: '+ err);
+      alert(err);
+      window.location.href = '/';
     }
-  })
+
+  });
 });
 
-socket.on('disconnect', function () {
-  console.log('disconnected from server')
+socket.on('disconnect',function () {
+  console.log('Disconnected from the server');
+    socket.emit('leaveRoom', {
+      user_name: localStorage.getItem('user_name'),
+      user_id: localStorage.getItem('user_id'),
+      room_id: localStorage.getItem('room_id')
+    });
 });
 
 socket.on('updateUserList', function (users) {
-  var ol = jQuery('<ol></ol>')
-  users.forEach(function (user) {
-    ol.append(jQuery('<li></li>').text(user))
-  })
+  var ol = jQuery('<ol></ol>');
 
-  jQuery('#users').html(ol)
-})
+  users.forEach( function (user) {
+    ol.append(jQuery('<li></li>').text(user.name));
+  });
+
+  jQuery('#users').html(ol);
+});
+
+socket.on('updateMessageList', function (messages) {
+
+  var template = jQuery('#message-template').html();
+
+  var messagesProcessed = 0;
+
+  var request = messages.forEach( function (message, index) {
+    var formatedTime = moment(message.createdAt).format('h:mm a');
+    var html = Mustache.render(template, {
+      from: message.from,
+      text: message.text,
+      createdAt: formatedTime,
+      url: message.url
+    });
+    jQuery('#messages').append(html);
+    messagesProcessed ++;
+    if( messagesProcessed == messages.length){
+      scrollToBottom();
+    }
+  });
+});
 
 socket.on('newMessage', function (message) {
-  console.log(message.text)
-  var formattedTime = moment(message.createdAt).format('h:mm a');
+  var formatedTime = moment(message.createdAt).format('h:mm a');
   var template = jQuery('#message-template').html();
   var html = Mustache.render(template, {
+    from: message.from,
     text: message.text,
-    from: message.from,
-    createdAt: formattedTime
+    createdAt: formatedTime,
+    url: message.url
   });
-
   jQuery('#messages').append(html);
-  scrollToBottom()
+  scrollToBottom();
 });
 
-socket.on('newLocationMessage', function (message) {
-  var formattedTime = moment(message.createdAt).format('h:mm a')
-  var template = jQuery('#location-message-template').html()
-  var html = Mustache.render(template, {
-    from: message.from,
-    url: message.url,
-    createdAt: formattedTime
-  })
 
-  jQuery('#messages').append(html)
-  scrollToBottom()
-})
+// ***** UI Events ****
 
-jQuery('#message-form').on('submit', function (e) {
+var locationButton = jQuery('#send-location');
+var message_form = jQuery('#message-form');
+var _window = jQuery(window);
+
+message_form.on('submit', function(e) {
   e.preventDefault();
-
-  var messageTextBox = jQuery('[name=message]')
-
+  var text = jQuery('[name=message]').val();
   socket.emit('createMessage', {
-    text: messageTextBox.val()
+    room_id: localStorage.getItem('room_id'),
+    user_name: localStorage.getItem('user_name'),
+    text: text
   }, function () {
-    messageTextBox.val('')
+    jQuery('[name=message]').val('');
   });
 });
 
-var locationButton = jQuery('#send-location')
-locationButton.on('click', function () {
+locationButton.on('click', function(){
   if (!navigator.geolocation) {
-    return alert('Geolocation not supported by your browser')
+    return alert('Geolocation is not supported by your browser');
   }
 
-  locationButton.attr('disabled', 'disabled').text('Sending location...')
+  locationButton.attr('disabled', 'disabled').text('Sending location...');
 
-  navigator.geolocation.getCurrentPosition(function (position) {
-    locationButton.removeAttr('disabled').text('Send location')
+  navigator.geolocation.getCurrentPosition(function(position){
+    locationButton.removeAttr('disabled').text('Send location');
     socket.emit('createLocationMessage', {
+      room_id: localStorage.getItem('room_id'),
+      user_name: localStorage.getItem('user_name'),
       latitude: position.coords.latitude,
       longitude: position.coords.longitude
-    })
-  }, function () {
-    locationButton.removeAttr('disabled').text('send location')
-    alert('unable to fetch location')
-  })
-})
+    });
+  }, function(e){
+    locationButton.removeAttr('disabled').text('Send location');
+    alert('Unable to fetch location: ' + e.message);
+  });
+
+
+});

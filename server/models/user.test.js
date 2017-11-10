@@ -1,11 +1,11 @@
 const expect = require('expect')
 
-const {Users} = require('./users')
+const {Users} = require('./user')
 
 describe('Users', () => {
   var users
   beforeEach(() => {
-    users = new Users()
+    users = new User()
     users.users = [{
       id: '1',
       name: 'Mike',
@@ -24,7 +24,7 @@ describe('Users', () => {
   })
 
   it('should add new users', () => {
-    var users = new Users()
+    var users = new User()
     var user = {
       id: '123',
       name: 'Phil',
