@@ -25,6 +25,8 @@ var io = socketIO(server);
 app.use( bodyParser.json() );
 app.use( express.static(public_path) );
 
+//REMOVE ALL USER CONNECTIONS
+
 Room.cleanAllUserList().then( () => {
   console.log('Rooms were cleaned');
 }).catch( (e) =>{
@@ -32,10 +34,6 @@ Room.cleanAllUserList().then( () => {
 });
 
 io.on('connection', (socket) => {
-
-  socket.broadcast.emit('newMessage', generateMessage('Admin', 'New User Joined'))
-
-  socket.broadcast.emit('newNotice', generateMessage('Admin', 'swipe right on mobile phones to see the people list!'))
 
 
   socket.on('join', (params, callback) => {
@@ -85,7 +83,7 @@ io.on('connection', (socket) => {
 
       callback();
 
-    }).catch((e) => callback(e));
+    }).catch( (e) => callback(e.message));
 
   });
 
@@ -102,21 +100,21 @@ io.on('connection', (socket) => {
     }).then( (messageDoc) => {
       io.to(tmp_room._id).emit('newMessage', generateMessage(newMessage.user_name, newMessage.text));
       callback();
-    }).catch((e) => callback(e))
+    });
   });
 
   socket.on('createLocationMessage', (newMessage) => {
     let tmp_room;
-    Room.findById(newMessage.room_id).then((roomDoc) => {
+    Room.findById(newMessage.room_id).then( (roomDoc) => {
       tmp_room = roomDoc;
-      if (tmp_room && newMessage.latitude && newMessage.longitude) {
+      if(tmp_room && newMessage.latitude && newMessage.longitude){
         return roomDoc.addMessage(generateLocationMessage(newMessage.user_name,newMessage.latitude, newMessage.longitude));
-      } else {
+      }else {
         return Promise.reject();
       }
-    }).then((messageDoc) => {
+    }).then( (messageDoc) => {
       io.to(tmp_room._id).emit('newMessage', generateLocationMessage(newMessage.user_name,newMessage.latitude, newMessage.longitude));
-    }).catch((e) => callback(e))
+    });
   });
 
   socket.on('newUser', (params, callback) => {
@@ -129,19 +127,19 @@ io.on('connection', (socket) => {
 
     user.save().then( () => {
       return user.generateAuthToken();
-    }).then((token) => {
+    }).then( (token) => {
       callback(null, user, token);
-    }).catch((e) => {
+    }).catch( (e) => {
       callback(e);
-    });
+    } );
   });
 
   socket.on('getRoomList', (callback) => {
 
     Room.getRoomList().then( (roomList) => {
       callback(roomList);
-    }).catch((e) => {
-      callback(e);
+    }).catch( (e) => {
+      callback();
     });
 
   });
@@ -227,8 +225,9 @@ io.on('connection', (socket) => {
     }
 
   });
+
 });
 
-server.listen(port, () => {
-  console.log(`started on port ${port}`)
+server.listen(port, ()=> {
+    console.log(`Server is up on port ${port}`);
 });

@@ -1,25 +1,5 @@
 var socket = io();
 
-if ( $(window).width() > 739) {
-  console.log('large screen')
-}
-else {
-  socket.on('newMessage', function () {
-    var time = moment().valueOf()
-    var formattedTime = moment(time).format('h:mm a')
-    var template = jQuery('#message-template').html();
-    var html = Mustache.render(template, {
-      text: 'swipe right on mobile phones to see the people list!',
-      from: 'Admin',
-      createdAt: formattedTime
-    })
-
-    jQuery('#messages').append(html);
-    scrollToBottom()
-  });
-  //Add your javascript for small screens here
-}
-
 var swipe = new Hammer(document);
 var pan = new Hammer(document)
 // detect swipe and call to a function
@@ -58,21 +38,23 @@ pan.on('panright panleft', function(e) {
 
 
 
-function scrollToBottom () {
-  // Selectors
-  var messages = jQuery('#messages');
-  var newMessage = messages.children('li:last-child');
-  // Heights
-  var clientHeight = messages.prop('clientHeight');
-  var scrollTop = messages.prop('scrollTop');
-  var scrollHeight = messages.prop('scrollHeight');
-  var newMessageHeight = newMessage.innerHeight();
-  var lastMessageHeight = newMessage.prev().innerHeight();
+function scrollToBottom() {
+  //Selectors
+  let messages = jQuery('#messages');
+  let newMessage = messages.children('li:last-child');
+  //Heights
+  let clientHeight = messages.prop('clientHeight');
+  let scrollTop = messages.prop('scrollTop');
+  let scrollHeight = messages.prop('scrollHeight');
+  let newMessageHeight = newMessage.innerHeight();
+  let lastMessageHeigt = newMessage.prev().innerHeight();
 
-  if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
-    messages.scrollTop(scrollHeight)
+  if( clientHeight + scrollTop + newMessageHeight + lastMessageHeigt>= scrollHeight || scrollTop == 0 ){
+    messages.scrollTop(scrollHeight);
   }
 }
+
+// ***** SocketIO Events ****
 
 socket.on('connect', function () {
 
@@ -86,6 +68,27 @@ socket.on('connect', function () {
   if( !room_id || !room_name || !user_name || !user_id || !user_token) {
     alert('You have to sign in to start chatting');
     return window.location.href = '/';
+  }
+  var runOnce = false
+  if ( $(window).width() > 739 && runOnce === true) {
+    //do nothing
+  }
+  else {
+    //let user know you can swipe right for a peoples list!
+
+      var time = moment().valueOf()
+      var formattedTime = moment(time).format('h:mm a')
+      var template = jQuery('#message-template').html();
+      var html = Mustache.render(template, {
+        text: 'swipe right on mobile phones to see the people list!',
+        from: 'Admin',
+        createdAt: formattedTime
+      })
+
+      jQuery('#messages').append(html);
+      scrollToBottom()
+      runOnce = true
+    //Add your javascript for small screens here
   }
 
   //Set room name
