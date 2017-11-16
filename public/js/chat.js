@@ -1,5 +1,7 @@
 var socket = io();
 
+// ** MOBILE UI/UX
+
 var swipe = new Hammer(document);
 var pan = new Hammer(document)
 // detect swipe and call to a function
@@ -36,7 +38,7 @@ pan.on('panright panleft', function(e) {
 
 });
 
-
+// END MOBILE UI/UX
 
 function scrollToBottom() {
   //Selectors
@@ -90,7 +92,6 @@ socket.on('connect', function () {
       runOnce = true
     //Add your javascript for small screens here
   }
-
   //Set room name
   $('#room-name').html(room_name);
 
@@ -100,16 +101,15 @@ socket.on('connect', function () {
   }
 
   socket.emit('join', params, function(err) {
-    if(err){
-      console.log('Error: '+ err);
+    if (err) {
+      console.log('Error: ' + err);
       alert(err);
       window.location.href = '/';
     }
-
   });
 });
 
-socket.on('disconnect',function () {
+socket.on('disconnect', function () {
   console.log('Disconnected from the server');
     socket.emit('leaveRoom', {
       user_name: localStorage.getItem('user_name'),
@@ -120,7 +120,6 @@ socket.on('disconnect',function () {
 
 socket.on('updateUserList', function (users) {
   var ol = jQuery('<ol></ol>');
-
   users.forEach( function (user) {
     ol.append(jQuery('<li></li>').text(user.name));
   });
@@ -129,9 +128,7 @@ socket.on('updateUserList', function (users) {
 });
 
 socket.on('updateMessageList', function (messages) {
-
   var template = jQuery('#message-template').html();
-
   var messagesProcessed = 0;
 
   var request = messages.forEach( function (message, index) {
@@ -142,9 +139,11 @@ socket.on('updateMessageList', function (messages) {
       createdAt: formatedTime,
       url: message.url
     });
+
     jQuery('#messages').append(html);
+
     messagesProcessed ++;
-    if( messagesProcessed == messages.length){
+    if (messagesProcessed == messages.length) {
       scrollToBottom();
     }
   });
@@ -159,10 +158,10 @@ socket.on('newMessage', function (message) {
     createdAt: formatedTime,
     url: message.url
   });
+
   jQuery('#messages').append(html);
   scrollToBottom();
 });
-
 
 // ***** UI Events ****
 
@@ -189,7 +188,7 @@ locationButton.on('click', function(){
 
   locationButton.attr('disabled', 'disabled').text('Sending location...');
 
-  navigator.geolocation.getCurrentPosition(function(position){
+  navigator.geolocation.getCurrentPosition( function(position) {
     locationButton.removeAttr('disabled').text('Send location');
     socket.emit('createLocationMessage', {
       room_id: localStorage.getItem('room_id'),
@@ -197,10 +196,8 @@ locationButton.on('click', function(){
       latitude: position.coords.latitude,
       longitude: position.coords.longitude
     });
-  }, function(e){
+  }, function(e) {
     locationButton.removeAttr('disabled').text('Send location');
     alert('Unable to fetch location: ' + e.message);
   });
-
-
 });
