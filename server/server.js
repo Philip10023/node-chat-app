@@ -43,8 +43,8 @@ io.on('connection', (socket) => {
       if (!userDoc) {
         throw new Error('Invalid user');
       }
+      
       user = userDoc;
-
       //Veirfy room id
       return Room.findById(params.room_id);
     }).then((roomDoc) => {
